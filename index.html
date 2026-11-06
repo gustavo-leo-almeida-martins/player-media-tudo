@@ -19,7 +19,7 @@ button,input,select{font:inherit;color:inherit}button,label{cursor:pointer}
 input,select{width:100%;background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:var(--raio);padding:8px 10px}
 :focus-visible{outline:2px solid var(--cor-primaria);outline-offset:2px}
 
-/* ===== Barra superior ===== */
+/* ===== Barra superior (abas e busca só aparecem com listas carregadas) ===== */
 .nav{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:12px 4vw;
   background:var(--cor-nav);backdrop-filter:blur(8px)}
 .marca{color:var(--cor-primaria);font-weight:800;font-size:22px;letter-spacing:1px}
@@ -27,8 +27,10 @@ input,select{width:100%;background:var(--cor-fundo);border:1px solid var(--cor-b
 .abas button{background:none;border:0;color:var(--cor-texto-2);padding:6px 2px;white-space:nowrap}
 .abas .on{color:var(--cor-texto);font-weight:700;box-shadow:0 2px var(--cor-primaria)}
 #q{max-width:240px}
+body.sem .abas,body.sem #q{display:none}
+body.sem .nav{justify-content:space-between}
 
-/* ===== Destaque (hero) ===== */
+/* ===== Destaque (só com item que tenha imagem real) ===== */
 .hero{position:relative;min-height:60vh;display:flex;align-items:flex-end;gap:30px;padding:60px 4vw 7vh;overflow:hidden;margin-top:-58px}
 .hero .fundo{position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;filter:blur(30px) brightness(.55)}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--cor-fundo) 3%,transparent 65%)}
@@ -47,13 +49,16 @@ input,select{width:100%;background:var(--cor-fundo);border:1px solid var(--cor-b
 .card{flex:none;width:150px;cursor:pointer;transition:transform .18s;content-visibility:auto;contain-intrinsic-size:auto 240px}
 .card.tv{width:230px;contain-intrinsic-size:auto 170px}
 .card:hover{transform:scale(1.07);position:relative;z-index:1}
-.cap{aspect-ratio:2/3;background:var(--cor-painel-2);border-radius:var(--raio);overflow:hidden;display:grid;place-items:center;font-size:30px}
+.cap{aspect-ratio:2/3;background:var(--cor-painel-2);border-radius:var(--raio);overflow:hidden;display:grid;place-items:center}
 .tv .cap{aspect-ratio:16/9}.cap img{width:100%;height:100%;object-fit:cover}.tv .cap img{object-fit:contain;padding:12px}
+/* item sem imagem: cartão só com o nome, sem ícone de enfeite */
+.cap.sem{padding:10px;text-align:center;font-size:13px;font-weight:600;line-height:1.25;word-break:break-word;
+  background:linear-gradient(135deg,var(--cor-painel-2),var(--cor-borda))}
 .tit{font-size:12px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--cor-texto-2)}
 .card:hover .tit{color:var(--cor-texto)}
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;padding:6px 4vw 30px}
-.grade .card.tv{width:auto}.grade .card{width:auto}
-.vazio{padding:20vh 4vw;text-align:center;color:var(--cor-texto-2);display:flex;flex-direction:column;align-items:center;gap:14px}
+.grade .card{width:auto}
+.vazio{padding:12vh 4vw;text-align:center;color:var(--cor-texto-2);display:flex;flex-direction:column;align-items:center;gap:14px}
 footer{padding:20px;text-align:center;font-size:12px;color:var(--cor-texto-2)}
 
 /* ===== Diálogos ===== */
@@ -62,6 +67,7 @@ dialog::backdrop{background:rgba(0,0,0,.78)}
 dialog h2{margin-bottom:12px}
 .linha{display:flex;gap:8px;margin:8px 0}.linha>*{min-width:0}
 #aviso{font-size:12px;min-height:18px;margin:6px 0}#aviso.erro{color:var(--cor-erro)}#aviso.ok{color:#4cd37b}
+#esp{font-size:12px;color:var(--cor-texto-2)}
 dialog ul{list-style:none;max-height:40vh;overflow-y:auto;margin:8px 0}
 dialog li{display:flex;justify-content:space-between;gap:10px;padding:8px;border-radius:var(--raio);cursor:pointer}
 dialog li:hover{background:var(--cor-painel-2)}dialog li small{color:var(--cor-texto-2)}
@@ -81,7 +87,7 @@ dialog li button{background:none;border:0;color:var(--cor-erro)}
 @media(max-width:700px){.hero .poster{display:none}#q{max-width:none;flex:1}}
 </style>
 </head>
-<body>
+<body class="sem">
 
 <nav class="nav">
   <span class="marca">IPTV</span>
@@ -90,7 +96,7 @@ dialog li button{background:none;border:0;color:var(--cor-erro)}
     <button data-a="filme">Filmes</button><button data-a="serie">Séries</button>
   </div>
   <input type="search" id="q" placeholder="Buscar…">
-  <button class="btn" id="btnListas">📋 Listas</button>
+  <button class="btn" id="btnListas">Listas</button>
   <button class="btn" id="tema" title="Alternar tema">🌙</button>
 </nav>
 
@@ -106,10 +112,11 @@ dialog li button{background:none;border:0;color:var(--cor-erro)}
     <input type="text" id="nome" placeholder="Nome (opcional)">
   </div>
   <div class="linha"><input type="text" id="url" placeholder="Link da lista M3U"><button class="btn pri" id="add">Adicionar</button></div>
-  <label class="btn" for="arq">📂 Enviar arquivo(s) .m3u / .m3u8</label>
+  <label class="btn" for="arq">Enviar arquivo(s) .m3u / .m3u8</label>
   <input type="file" id="arq" multiple hidden accept=".m3u,.m3u8,audio/mpegurl,audio/x-mpegurl,application/vnd.apple.mpegurl,text/plain">
   <div id="aviso" role="status"></div>
   <ul id="ul"></ul>
+  <div id="esp"></div>
   <div class="linha"><button class="btn" id="limpar">Limpar tudo</button><button class="btn pri" id="fx" style="margin-left:auto">Fechar</button></div>
 </dialog>
 
@@ -138,24 +145,49 @@ dialog li button{background:none;border:0;color:var(--cor-erro)}
 'use strict';
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
-const IC = {tv: '📺', filme: '🎬', serie: '🍿'};
 const NOMES = {tv: 'TV ao vivo', filme: 'Filmes', serie: 'Séries', auto: 'Automático'};
 const K = {listas: 'iptv.listas', antigo: 'iptv.canais', tema: 'iptv.tema'};
 const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
 
 /* ===== Estado ===== */
-let listas = [];                         // [{nome, tipo, c: [{n,l,g,u,t}]}]
-let cat = {tv: [], filme: [], serie: []};// itens agrupados por tipo (séries já agrupadas por título)
-let aba = 'inicio', gSel = '';           // aba atual e grupo selecionado
-let reg = [], lista = [], hero = null;   // registro dos cartões, itens filtrados, destaque
-let ctx = [], pos = -1;                  // fila atual de reprodução (para anterior/próximo)
+let listas = [];                          // [{nome, tipo, c: [{n,l,g,u,t}]}]
+let cat = {tv: [], filme: [], serie: []}; // itens por tipo (séries já agrupadas por título)
+let aba = 'inicio', gSel = '', lim = 800; // aba, grupo selecionado, limite da grade
+let reg = [], lista = [], hero = null;
+let ctx = [], pos = -1;                   // fila de reprodução (anterior/próximo)
 let hls = null, nativo = false, tent = 0, timer = null, serAtual = null, serEps = [];
+
+/* ===================================================================
+   ARMAZENAMENTO: IndexedDB (centenas de MB, em vez dos ~5 MB do
+   localStorage). Se o IndexedDB falhar, usa o localStorage como plano B.
+   =================================================================== */
+let dbp = null;
+const db = () => dbp || (dbp = new Promise((ok, no) => {
+  const r = indexedDB.open('iptv', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('kv');
+  r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error);
+}));
+const idbGet = async k => { const d = await db(); return new Promise((ok, no) => {
+  const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => ok(q.result); q.onerror = () => no(q.error); }); };
+const idbSet = async (k, v) => { const d = await db(); return new Promise((ok, no) => {
+  const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k);
+  t.oncomplete = ok; t.onerror = t.onabort = () => no(t.error); }); };
+
+async function salvar() {                 // retorna 'idb', 'ls' ou false
+  try { await idbSet('listas', listas); return 'idb'; } catch {}
+  return lsSet(K.listas, JSON.stringify(listas)) ? 'ls' : false;
+}
+async function espaco() {                 // mostra quanto do armazenamento está em uso
+  try {
+    const e = await navigator.storage.estimate();
+    $('esp').textContent = 'Armazenamento: ' + (e.usage / 1048576).toFixed(1) + ' MB usados de ' + Math.round(e.quota / 1048576) + ' MB disponíveis';
+  } catch {}
+}
 
 /* ===================================================================
    PARSER M3U (nome, logo, grupo, url + tipo do conteúdo)
    =================================================================== */
-// Adivinha se o item é série, filme ou TV pela URL, grupo e nome
 const detectar = i =>
   /\/series\//i.test(i.u) || /s[ée]ries?\b/i.test(i.g) || /\bS\d{1,2}\s*E\d{1,3}\b/i.test(i.n) ? 'serie'
   : /\/movie\//i.test(i.u) || /filme|movie|vod|cine/i.test(i.g) || /\.mp4(\?|$)/i.test(i.u) ? 'filme' : 'tv';
@@ -204,12 +236,21 @@ function reconstruir() {
 }
 
 /* ===================================================================
-   INTERFACE: destaque, filas por grupo, grade de busca
+   INTERFACE
    =================================================================== */
-const card = i => '<div class="card ' + i.t + '" data-i="' + (reg.push(i) - 1) + '" title="' + esc(i.n) + '"><div class="cap">' +
-  (i.l ? '<img loading="lazy" alt="" src="' + esc(i.l) + '">' : IC[i.t]) + '</div><div class="tit">' + esc(i.n) + '</div></div>';
-// se uma imagem falhar, troca por ícone
-document.addEventListener('error', e => { if (e.target.tagName === 'IMG') e.target.replaceWith('📺'); }, true);
+// Cartão: com imagem real mostra a capa + nome; sem imagem mostra só o nome
+const card = i => '<div class="card ' + i.t + '" data-i="' + (reg.push(i) - 1) + '" title="' + esc(i.n) + '">' +
+  (i.l ? '<div class="cap"><img loading="lazy" alt="' + esc(i.n) + '" src="' + esc(i.l) + '"></div><div class="tit">' + esc(i.n) + '</div>'
+       : '<div class="cap sem">' + esc(i.n) + '</div>') + '</div>';
+
+// Imagem quebrada: o cartão vira só texto (nada de ícone genérico)
+document.addEventListener('error', e => {
+  const im = e.target;
+  if (im.tagName !== 'IMG') return;
+  const p = im.parentElement;
+  if (p.classList.contains('cap')) { p.classList.add('sem'); p.textContent = im.alt; if (p.nextElementSibling) p.nextElementSibling.remove(); }
+  else im.remove();
+}, true);
 
 const fila = (titulo, arr, acao) =>
   '<section class="secao"><h3 class="sec"><button data-r="' + esc(acao) + '">' + esc(titulo) + ' ›</button> <small>' + arr.length +
@@ -218,22 +259,28 @@ const fila = (titulo, arr, acao) =>
 
 function render() {
   reg = [];
+  document.body.classList.toggle('sem', !listas.length);   // visual de streaming só com listas carregadas
+  if (aba !== 'inicio' && !cat[aba].length) aba = 'inicio';
+  document.querySelectorAll('#abas button').forEach(b => {   // esconde abas de tipos sem conteúdo
+    const a = b.dataset.a; b.hidden = a !== 'inicio' && !cat[a].length; b.classList.toggle('on', a === aba);
+  });
   const q = $('q').value.trim().toLowerCase();
   const base = aba === 'inicio' ? [...cat.filme, ...cat.serie, ...cat.tv] : cat[aba];
   lista = base.filter(i => (!q || i.n.toLowerCase().includes(q)) && (!gSel || i.g === gSel));
-  document.querySelectorAll('#abas button').forEach(b => b.classList.toggle('on', b.dataset.a === aba));
   let h = '';
   if (!listas.length) {
-    h = '<div class="vazio"><h2>Bem-vindo</h2><p>Adicione sua primeira lista M3U para começar.</p><button class="btn pri" data-add>📋 Adicionar lista</button></div>';
+    h = '<div class="vazio"><p>Nenhuma lista carregada.</p><button class="btn pri" data-add>Adicionar lista</button></div>';
   } else if (q || gSel) {
     h = '<h3 class="sec">' + (gSel ? '<button data-v>‹ Voltar</button> ' + esc(gSel) : 'Resultados') + ' <small>' + lista.length + ' itens</small></h3>' +
-        '<div class="grade">' + lista.slice(0, 800).map(card).join('') + '</div>';
+        '<div class="grade">' + lista.slice(0, lim).map(card).join('') + '</div>' +
+        (lista.length > lim ? '<div class="vazio" style="padding:0 0 30px"><button class="btn" data-more>Mostrar mais</button></div>' : '');
   } else if (!lista.length) {
-    h = '<div class="vazio"><p>Nada por aqui ainda. Adicione uma lista deste tipo em Listas.</p></div>';
+    h = '<div class="vazio"><p>Nada por aqui ainda.</p></div>';
   } else {
     if (aba === 'inicio') {
+      // destaque só se houver filme/série com imagem real
       if (!hero) { const pool = base.filter(x => x.l && x.t !== 'tv'); hero = pool[Math.random() * pool.length | 0] || null; }
-      if (hero) h += '<section class="hero"><img class="fundo" alt="" src="' + esc(hero.l) + '"><div class="txt"><small>' + IC[hero.t] + ' ' + NOMES[hero.t] +
+      if (hero) h += '<section class="hero"><img class="fundo" alt="" src="' + esc(hero.l) + '"><div class="txt"><small>' + NOMES[hero.t] +
         '</small><h1>' + esc(hero.n) + '</h1><p>' + esc(hero.g) + '</p><div><button class="btn pri" data-play>▶ ' +
         (hero.t === 'serie' ? 'Ver episódios' : 'Assistir') + '</button></div></div><img class="poster" alt="" src="' + esc(hero.l) + '"></section>';
       for (const t of ['filme', 'serie', 'tv']) if (cat[t].length) h += fila(NOMES[t], cat[t], t);
@@ -250,15 +297,16 @@ $('conteudo').addEventListener('click', e => {
   const t = e.target, c = t.closest('.card');
   if (c) return abrir(reg[+c.dataset.i]);
   if (t.closest('[data-play]')) return abrir(hero);
-  if (t.closest('[data-add]')) return $('dl').showModal();
-  if (t.closest('[data-v]')) { gSel = ''; return render(); }
+  if (t.closest('[data-add]')) return $('btnListas').click();
+  if (t.closest('[data-more]')) { lim += 800; return render(); }
+  if (t.closest('[data-v]')) { gSel = ''; lim = 800; return render(); }
   const r = t.closest('[data-r]');
-  if (r) { aba === 'inicio' ? aba = r.dataset.r : gSel = r.dataset.r; render(); return scrollTo(0, 0); }
+  if (r) { aba === 'inicio' ? aba = r.dataset.r : gSel = r.dataset.r; lim = 800; render(); return scrollTo(0, 0); }
   const s = t.closest('.seta');
   if (s) { const f = s.parentElement.querySelector('.fila'); f.scrollBy({left: (s.classList.contains('e') ? -1 : 1) * f.clientWidth * .8, behavior: 'smooth'}); }
 });
-$('abas').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { aba = b.dataset.a; gSel = ''; render(); } });
-let deb; $('q').addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(render, 200); });
+$('abas').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { aba = b.dataset.a; gSel = ''; lim = 800; render(); } });
+let deb; $('q').addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(() => { lim = 800; render(); }, 200); });
 
 /* ===================================================================
    LISTAS: adicionar (arquivo ou link), remover, salvar
@@ -269,10 +317,10 @@ function renderListas() {
   $('ul').innerHTML = listas.map((l, i) => '<li><span>' + esc(l.nome) + ' <small>· ' + l.c.length + ' itens · ' + NOMES[l.tipo] +
     '</small></span><button data-x="' + i + '" title="Remover">✕</button></li>').join('') || '<li><small>Nenhuma lista ainda.</small></li>';
 }
-function atualizar(msg, cls) {
-  const ok = lsSet(K.listas, JSON.stringify(listas));
-  reconstruir(); renderListas(); gSel = ''; render();
-  aviso(msg + (ok ? '' : ' (grande demais para salvar no navegador: some ao recarregar)'), cls);
+async function atualizar(msg, cls) {
+  const ok = await salvar();
+  reconstruir(); renderListas(); gSel = ''; lim = 800; render(); espaco();
+  aviso(msg + (ok ? '' : ' (não foi possível salvar no navegador: some ao recarregar)'), cls);
 }
 // Adiciona (ou substitui, se o nome já existir) uma lista
 function adicionar(nome, texto) {
@@ -315,7 +363,7 @@ $('ul').addEventListener('click', e => {
   if (b) { listas.splice(+b.dataset.x, 1); atualizar('Lista removida.', 'ok'); }
 });
 $('limpar').onclick = () => { if (listas.length && confirm('Remover todas as listas?')) { listas = []; atualizar('Tudo removido.', 'ok'); } };
-$('btnListas').onclick = () => { renderListas(); aviso(''); $('dl').showModal(); };
+$('btnListas').onclick = () => { renderListas(); aviso(''); espaco(); $('dl').showModal(); };
 $('fx').onclick = () => $('dl').close();
 
 /* ===================================================================
@@ -419,17 +467,24 @@ function aplicarTema(t) { document.documentElement.dataset.theme = t; $('tema').
 $('tema').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; aplicarTema(t); lsSet(K.tema, t); };
 
 /* ===== Inicialização ===== */
-aplicarTema(lsGet(K.tema) || 'dark');
-try { listas = JSON.parse(lsGet(K.listas) || '[]'); } catch { listas = []; }
-if (!Array.isArray(listas)) listas = [];
-if (!listas.length) {   // migra a lista salva pela versão anterior
-  try {
-    const velha = JSON.parse(lsGet(K.antigo) || '[]');
-    if (velha.length) listas = [{nome: 'Minha lista', tipo: 'auto', c: velha.map(i => ({...i, t: detectar(i)}))}];
-  } catch {}
-}
-reconstruir(); render();
-if (!listas.length) { renderListas(); $('dl').showModal(); }
+(async () => {
+  aplicarTema(lsGet(K.tema) || 'dark');
+  try { navigator.storage.persist(); } catch {}      // pede ao navegador para não apagar os dados
+  let l = null;
+  try { l = await idbGet('listas'); } catch {}
+  if (Array.isArray(l)) listas = l;
+  else {                                               // migra o que as versões anteriores salvaram no localStorage
+    try { l = JSON.parse(lsGet(K.listas) || 'null'); } catch { l = null; }
+    if (!Array.isArray(l)) {
+      try { const v = JSON.parse(lsGet(K.antigo) || '[]'); l = v.length ? [{nome: 'Minha lista', tipo: 'auto', c: v.map(i => ({...i, t: detectar(i)}))}] : []; }
+      catch { l = []; }
+    }
+    listas = l;
+    if (listas.length && await salvar() === 'idb') { try { localStorage.removeItem(K.listas); localStorage.removeItem(K.antigo); } catch {} }
+  }
+  reconstruir(); render();
+  if (!listas.length) { renderListas(); espaco(); $('dl').showModal(); }
+})();
 })();
 </script>
 </body>
