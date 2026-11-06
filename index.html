@@ -5,168 +5,162 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Player IPTV</title>
 <style>
-/* ===== Variáveis de tema (edite aqui para personalizar) ===== */
-:root{
-  --cor-fundo:#0b0f14; --cor-painel:#131a22; --cor-painel-2:#1b2530; --cor-borda:#26323f;
-  --cor-texto:#e8eef5; --cor-texto-2:#8fa0b3;
-  --cor-primaria:#1ed760; --cor-primaria-txt:#04130a; --cor-erro:#ff5d5d;
-  --raio:10px; --larg-lista:340px;
-}
-[data-theme=light]{
-  --cor-fundo:#f2f5f8; --cor-painel:#ffffff; --cor-painel-2:#e9eef3; --cor-borda:#d5dde6;
-  --cor-texto:#12202e; --cor-texto-2:#5d6f82; --cor-primaria:#0a9f4a; --cor-primaria-txt:#ffffff;
-}
-
-/* ===== Base ===== */
+/* ===== Variáveis (troque a cor principal em --cor-primaria) ===== */
+:root{--cor-fundo:#0a0a0c;--cor-painel:#16161a;--cor-painel-2:#222228;--cor-borda:#2f2f37;--cor-texto:#f3f3f5;
+  --cor-texto-2:#9a9aa6;--cor-primaria:#e50914;--cor-primaria-txt:#fff;--cor-erro:#ff6b6b;--cor-nav:rgba(10,10,12,.9);--raio:6px}
+[data-theme=light]{--cor-fundo:#f4f4f6;--cor-painel:#fff;--cor-painel-2:#ececf0;--cor-borda:#d8d8e0;
+  --cor-texto:#17171c;--cor-texto-2:#6a6a78;--cor-nav:rgba(244,244,246,.92)}
 *{box-sizing:border-box;margin:0}
-html,body{height:100%}
-body{background:var(--cor-fundo);color:var(--cor-texto);display:flex;flex-direction:column;
-  font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-button,input,select{font:inherit;color:inherit}
-button,label.btn{cursor:pointer}
-.btn{background:var(--cor-painel-2);border:1px solid var(--cor-borda);border-radius:8px;padding:8px 12px;transition:.15s}
+body{background:var(--cor-fundo);color:var(--cor-texto);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select{font:inherit;color:inherit}button,label{cursor:pointer}
+.btn{background:var(--cor-painel-2);border:1px solid var(--cor-borda);border-radius:var(--raio);padding:8px 14px;display:inline-block}
 .btn:hover{border-color:var(--cor-primaria)}
 .btn.pri{background:var(--cor-primaria);color:var(--cor-primaria-txt);border-color:transparent;font-weight:600}
-.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cor-primaria);outline-offset:1px}
-input[type=text],input[type=search],select{width:100%;background:var(--cor-fundo);
-  border:1px solid var(--cor-borda);border-radius:8px;padding:8px 10px}
+input,select{width:100%;background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:var(--raio);padding:8px 10px}
+:focus-visible{outline:2px solid var(--cor-primaria);outline-offset:2px}
 
-/* ===== Cabeçalho e layout ===== */
-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--cor-painel);border-bottom:1px solid var(--cor-borda)}
-header h1{font-size:18px;flex:1}
-header h1 span{color:var(--cor-primaria)}
-#menu{display:none}
-.app{flex:1;min-height:0;display:flex;position:relative}
+/* ===== Barra superior ===== */
+.nav{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:12px 4vw;
+  background:var(--cor-nav);backdrop-filter:blur(8px)}
+.marca{color:var(--cor-primaria);font-weight:800;font-size:22px;letter-spacing:1px}
+.abas{display:flex;gap:16px;overflow-x:auto;flex:1}
+.abas button{background:none;border:0;color:var(--cor-texto-2);padding:6px 2px;white-space:nowrap}
+.abas .on{color:var(--cor-texto);font-weight:700;box-shadow:0 2px var(--cor-primaria)}
+#q{max-width:240px}
 
-/* ===== Barra lateral ===== */
-aside{width:var(--larg-lista);background:var(--cor-painel);border-right:1px solid var(--cor-borda);display:flex;flex-direction:column;min-height:0}
-.bloco{padding:12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--cor-borda)}
-.linha{display:flex;gap:6px}
-.linha>*{min-width:0}
-#aviso{display:none;font-size:12px;padding:8px 10px;border-radius:8px;background:var(--cor-painel-2)}
-#aviso.erro{display:block;color:var(--cor-erro)}
-#aviso.ok{display:block;color:var(--cor-primaria)}
-#contador{font-size:12px;color:var(--cor-texto-2)}
-#lista{flex:1;overflow-y:auto;list-style:none;padding:6px}
-#lista li{content-visibility:auto;contain-intrinsic-size:auto 52px;display:flex;align-items:center;gap:10px;
-  padding:8px;border-radius:8px;cursor:pointer;border-left:3px solid transparent}
-#lista li:hover{background:var(--cor-painel-2)}
-#lista li.ativo{background:var(--cor-painel-2);border-left-color:var(--cor-primaria)}
-#lista li.ativo .nome{color:var(--cor-primaria)}
-.logo{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:6px;background:var(--cor-fundo);overflow:hidden}
-.logo img{width:100%;height:100%;object-fit:contain}
-.info{min-width:0}
-.nome,.grupo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nome{font-weight:600}
-.grupo{font-size:12px;color:var(--cor-texto-2)}
+/* ===== Destaque (hero) ===== */
+.hero{position:relative;min-height:60vh;display:flex;align-items:flex-end;gap:30px;padding:60px 4vw 7vh;overflow:hidden;margin-top:-58px}
+.hero .fundo{position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;filter:blur(30px) brightness(.55)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--cor-fundo) 3%,transparent 65%)}
+.hero .txt{position:relative;z-index:1;flex:1;max-width:560px;color:#fff;display:flex;flex-direction:column;gap:10px}
+.hero h1{font-size:clamp(26px,5vw,48px);line-height:1.1}
+.hero .poster{position:relative;z-index:1;height:44vh;border-radius:8px;box-shadow:0 10px 40px #0009;margin-left:auto}
 
-/* ===== Área do player ===== */
-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:14px;overflow-y:auto}
-.atual{display:flex;align-items:center;gap:12px}
-.atual .logo{width:48px;height:48px}
-.atual .info{flex:1}
-.atual h2{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.atual p{font-size:12px;color:var(--cor-texto-2)}
-.palco{position:relative;flex:none;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 190px);
-  background:#000;border:1px solid var(--cor-borda);border-radius:var(--raio);overflow:hidden}
-video{width:100%;height:100%;display:block;background:#000}
-#overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;padding:20px;text-align:center;background:rgba(0,0,0,.78);color:#fff;white-space:pre-line}
+/* ===== Filas e cartões ===== */
+.sec{padding:16px 4vw 4px;font-size:18px}
+.sec button{background:none;border:0;font:inherit;color:inherit}.sec small{color:var(--cor-texto-2)}
+.secao{position:relative}
+.fila{display:flex;gap:10px;overflow-x:auto;padding:6px 4vw 22px;scrollbar-width:none}
+.seta{position:absolute;top:44px;bottom:28px;width:4vw;min-width:34px;z-index:2;border:0;color:#fff;font-size:28px;
+  background:rgba(0,0,0,.55);opacity:0;transition:.2s}.seta.e{left:0}.seta.d{right:0}
+.secao:hover .seta{opacity:1}
+.card{flex:none;width:150px;cursor:pointer;transition:transform .18s;content-visibility:auto;contain-intrinsic-size:auto 240px}
+.card.tv{width:230px;contain-intrinsic-size:auto 170px}
+.card:hover{transform:scale(1.07);position:relative;z-index:1}
+.cap{aspect-ratio:2/3;background:var(--cor-painel-2);border-radius:var(--raio);overflow:hidden;display:grid;place-items:center;font-size:30px}
+.tv .cap{aspect-ratio:16/9}.cap img{width:100%;height:100%;object-fit:cover}.tv .cap img{object-fit:contain;padding:12px}
+.tit{font-size:12px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--cor-texto-2)}
+.card:hover .tit{color:var(--cor-texto)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;padding:6px 4vw 30px}
+.grade .card.tv{width:auto}.grade .card{width:auto}
+.vazio{padding:20vh 4vw;text-align:center;color:var(--cor-texto-2);display:flex;flex-direction:column;align-items:center;gap:14px}
+footer{padding:20px;text-align:center;font-size:12px;color:var(--cor-texto-2)}
+
+/* ===== Diálogos ===== */
+dialog{background:var(--cor-painel);color:var(--cor-texto);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;width:min(560px,94vw);margin:auto}
+dialog::backdrop{background:rgba(0,0,0,.78)}
+dialog h2{margin-bottom:12px}
+.linha{display:flex;gap:8px;margin:8px 0}.linha>*{min-width:0}
+#aviso{font-size:12px;min-height:18px;margin:6px 0}#aviso.erro{color:var(--cor-erro)}#aviso.ok{color:#4cd37b}
+dialog ul{list-style:none;max-height:40vh;overflow-y:auto;margin:8px 0}
+dialog li{display:flex;justify-content:space-between;gap:10px;padding:8px;border-radius:var(--raio);cursor:pointer}
+dialog li:hover{background:var(--cor-painel-2)}dialog li small{color:var(--cor-texto-2)}
+dialog li button{background:none;border:0;color:var(--cor-erro)}
+#ul li{cursor:default}
+
+/* ===== Player em tela cheia ===== */
+#dp{width:100vw;height:100vh;max-width:none;max-height:none;padding:0;border:0;border-radius:0;background:#000;color:#fff;position:fixed;inset:0}
+#dp[open]{display:flex;flex-direction:column}
+.topo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#000}
+.topo .t{flex:1;min-width:0}.topo b,.topo small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topo small{color:#aaa;font-size:12px}
+#dp video{flex:1;min-height:0;width:100%;background:#000}
+#overlay{position:absolute;inset:50px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:20px;text-align:center;background:rgba(0,0,0,.8);white-space:pre-line}
 #overlay[hidden]{display:none}
-footer{padding:8px;text-align:center;font-size:12px;color:var(--cor-texto-2);background:var(--cor-painel);border-top:1px solid var(--cor-borda)}
-
-/* ===== Responsivo: lista vira painel colapsável ===== */
-@media (max-width:800px){
-  #menu{display:inline-block}
-  aside{position:absolute;top:0;bottom:0;left:0;width:min(88vw,360px);z-index:10;
-    transform:translateX(-100%);transition:transform .2s}
-  aside.aberto{transform:none;box-shadow:0 0 40px rgba(0,0,0,.6)}
-}
+@media(max-width:700px){.hero .poster{display:none}#q{max-width:none;flex:1}}
 </style>
 </head>
 <body>
 
-<header>
-  <button class="btn" id="menu" aria-label="Abrir ou fechar a lista de canais">☰</button>
-  <h1><span>▶</span> Player IPTV</h1>
-  <button class="btn" id="tema" title="Alternar tema claro/escuro">🌙</button>
-</header>
+<nav class="nav">
+  <span class="marca">IPTV</span>
+  <div class="abas" id="abas">
+    <button data-a="inicio">Início</button><button data-a="tv">TV ao vivo</button>
+    <button data-a="filme">Filmes</button><button data-a="serie">Séries</button>
+  </div>
+  <input type="search" id="q" placeholder="Buscar…">
+  <button class="btn" id="btnListas">📋 Listas</button>
+  <button class="btn" id="tema" title="Alternar tema">🌙</button>
+</nav>
 
-<div class="app">
-  <aside id="lateral">
-    <div class="bloco">
-      <div class="linha">
-        <label class="btn pri" for="arquivo" style="flex:1;text-align:center">📂 Enviar .m3u / .m3u8</label>
-        <input type="file" id="arquivo" accept=".m3u,.m3u8,audio/mpegurl,audio/x-mpegurl,application/vnd.apple.mpegurl,text/plain" hidden>
-        <button class="btn" id="limpar">Limpar lista</button>
-      </div>
-      <div class="linha">
-        <input type="text" id="url" placeholder="Cole o link da lista M3U" autocomplete="off">
-        <button class="btn" id="carregar">Carregar</button>
-      </div>
-      <div id="aviso" role="status"></div>
-    </div>
-    <div class="bloco">
-      <input type="search" id="busca" placeholder="Buscar canal…">
-      <select id="grupo" aria-label="Filtrar por grupo"></select>
-      <div id="contador">0 canais</div>
-    </div>
-    <ul id="lista"></ul>
-  </aside>
-
-  <main>
-    <div class="atual">
-      <div class="logo" id="logoAtual">📺</div>
-      <div class="info"><h2 id="nomeAtual">Nenhum canal</h2><p id="grupoAtual"></p></div>
-      <button class="btn" id="ant" title="Canal anterior (↑)">⏮ Anterior</button>
-      <button class="btn" id="prox" title="Próximo canal (↓)">Próximo ⏭</button>
-    </div>
-    <div class="palco">
-      <video id="video" controls playsinline></video>
-      <div id="overlay">
-        <p id="msg"></p>
-        <button class="btn pri" id="retry" hidden>Tentar novamente</button>
-      </div>
-    </div>
-  </main>
-</div>
-
+<div id="conteudo"></div>
 <footer>Este player apenas reproduz listas M3U fornecidas pelo usuário. Use apenas conteúdo legal.</footer>
+
+<!-- Gerenciador de listas -->
+<dialog id="dl">
+  <h2>Minhas listas</h2>
+  <div class="linha">
+    <select id="tipo"><option value="auto">Detectar tipo automaticamente</option><option value="tv">TV ao vivo</option>
+      <option value="filme">Filmes</option><option value="serie">Séries</option></select>
+    <input type="text" id="nome" placeholder="Nome (opcional)">
+  </div>
+  <div class="linha"><input type="text" id="url" placeholder="Link da lista M3U"><button class="btn pri" id="add">Adicionar</button></div>
+  <label class="btn" for="arq">📂 Enviar arquivo(s) .m3u / .m3u8</label>
+  <input type="file" id="arq" multiple hidden accept=".m3u,.m3u8,audio/mpegurl,audio/x-mpegurl,application/vnd.apple.mpegurl,text/plain">
+  <div id="aviso" role="status"></div>
+  <ul id="ul"></ul>
+  <div class="linha"><button class="btn" id="limpar">Limpar tudo</button><button class="btn pri" id="fx" style="margin-left:auto">Fechar</button></div>
+</dialog>
+
+<!-- Episódios de uma série -->
+<dialog id="ds">
+  <h2 id="sn"></h2>
+  <select id="st"></select>
+  <ul id="se"></ul>
+  <button class="btn" id="fs">Fechar</button>
+</dialog>
+
+<!-- Player -->
+<dialog id="dp">
+  <div class="topo">
+    <button class="btn" id="voltar">← Voltar</button>
+    <div class="t"><b id="pn"></b><small id="pg"></small></div>
+    <button class="btn" id="ant" title="Anterior (↑)">⏮</button><button class="btn" id="prox" title="Próximo (↓)">⏭</button>
+  </div>
+  <video id="video" controls playsinline></video>
+  <div id="overlay"><p id="msg"></p><button class="btn pri" id="retry" hidden>Tentar novamente</button></div>
+</dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
 (() => {
 'use strict';
-
-/* ===== Referências do DOM ===== */
-const el = {};
-['menu','tema','lateral','arquivo','limpar','url','carregar','aviso','busca','grupo','contador','lista',
- 'logoAtual','nomeAtual','grupoAtual','ant','prox','video','overlay','msg','retry']
-  .forEach(id => el[id] = document.getElementById(id));
-
-/* ===== Estado ===== */
-let canais = [];    // todos os canais: {n: nome, l: logo, g: grupo, u: url}
-let vista = [];     // índices (em canais) dos itens visíveis após busca/filtro
-let atual = -1;     // índice do canal em reprodução
-let hls = null;     // instância atual do Hls.js
-let nativo = false; // true quando o <video> toca o HLS direto (Safari)
-let tentativas = 0, timer = null;
-
-/* ===== localStorage seguro (pode falhar em modo privado/cota cheia) ===== */
-const K = {lista:'iptv.canais', url:'iptv.url', tema:'iptv.tema'};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
+const IC = {tv: '📺', filme: '🎬', serie: '🍿'};
+const NOMES = {tv: 'TV ao vivo', filme: 'Filmes', serie: 'Séries', auto: 'Automático'};
+const K = {listas: 'iptv.listas', antigo: 'iptv.canais', tema: 'iptv.tema'};
 const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
-const lsDel = k => { try { localStorage.removeItem(k); } catch {} };
 
-const esc = s => String(s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
-const aviso = (t, tipo) => { el.aviso.textContent = t; el.aviso.className = tipo || ''; };
+/* ===== Estado ===== */
+let listas = [];                         // [{nome, tipo, c: [{n,l,g,u,t}]}]
+let cat = {tv: [], filme: [], serie: []};// itens agrupados por tipo (séries já agrupadas por título)
+let aba = 'inicio', gSel = '';           // aba atual e grupo selecionado
+let reg = [], lista = [], hero = null;   // registro dos cartões, itens filtrados, destaque
+let ctx = [], pos = -1;                  // fila atual de reprodução (para anterior/próximo)
+let hls = null, nativo = false, tent = 0, timer = null, serAtual = null, serEps = [];
 
 /* ===================================================================
-   PARSER M3U
-   Extrai nome (tvg-name ou texto após a vírgula), logo, grupo e URL.
-   Linhas inválidas e entradas sem URL são ignoradas.
+   PARSER M3U (nome, logo, grupo, url + tipo do conteúdo)
    =================================================================== */
-function parseM3U(texto) {
+// Adivinha se o item é série, filme ou TV pela URL, grupo e nome
+const detectar = i =>
+  /\/series\//i.test(i.u) || /s[ée]ries?\b/i.test(i.g) || /\bS\d{1,2}\s*E\d{1,3}\b/i.test(i.n) ? 'serie'
+  : /\/movie\//i.test(i.u) || /filme|movie|vod|cine/i.test(i.g) || /\.mp4(\?|$)/i.test(i.u) ? 'filme' : 'tv';
+
+function parseM3U(texto, tipo) {
   const out = [];
   let meta = null;
   for (const bruto of texto.replace(/^\uFEFF/, '').split(/\r?\n/)) {
@@ -174,22 +168,17 @@ function parseM3U(texto) {
     if (!l) continue;
     if (/^#EXTINF/i.test(l)) {
       const attr = k => (l.match(new RegExp(k + '="([^"]*)"', 'i')) || [])[1] || '';
-      // remove os trechos entre aspas para achar a vírgula que separa o nome
       const depois = l.replace(/"[^"]*"/g, '').split(',').slice(1).join(',').trim();
       const logo = attr('tvg-logo').trim();
-      meta = {
-        n: (attr('tvg-name') || depois).trim(),
-        l: /^(https?:|data:image)/i.test(logo) ? logo : '',
-        g: attr('group-title').trim() || 'Sem grupo'
-      };
+      meta = {n: (attr('tvg-name') || depois).trim(),
+              l: /^(https?:|data:image)/i.test(logo) ? logo : '',
+              g: attr('group-title').trim() || 'Sem grupo'};
     } else if (l[0] !== '#') {
       if (/^https?:\/\//i.test(l)) {
         const m = meta || {l: '', g: 'Sem grupo'};
-        out.push({
-          n: m.n || 'Canal ' + (out.length + 1),
-          l: m.l, g: m.g,
-          u: l.split('|')[0]        // descarta sufixo de headers estilo Kodi (|User-Agent=...)
-        });
+        const it = {n: m.n || 'Item ' + (out.length + 1), l: m.l, g: m.g, u: l.split('|')[0]};
+        it.t = tipo && tipo !== 'auto' ? tipo : detectar(it);
+        out.push(it);
       }
       meta = null;
     }
@@ -197,216 +186,250 @@ function parseM3U(texto) {
   return out;
 }
 
-/* ===== Carregar lista: por arquivo ou por link ===== */
-function aplicar(texto) {
-  const lista = parseM3U(texto);
-  if (!lista.length) { aviso('Lista inválida ou vazia: nenhum canal com URL foi encontrado.', 'erro'); return false; }
-  canais = lista;
-  const salvo = lsSet(K.lista, JSON.stringify(canais));
-  el.busca.value = '';
-  resetAtual('Escolha um canal na lista.');
-  renderGrupos(); filtrar();
-  aviso(lista.length + ' canais carregados' + (salvo ? '.' : ' (grande demais para salvar no navegador).'), 'ok');
-  el.lateral.classList.remove('aberto');
+/* Monta o catálogo: agrupa episódios (ex.: "Nome S01E02") em séries */
+function reconstruir() {
+  cat = {tv: [], filme: [], serie: []};
+  const mapa = new Map();
+  for (const li of listas) for (const i of li.c) {
+    if (i.t !== 'serie') { cat[i.t].push(i); continue; }
+    const m = i.n.match(/^(.*?)[\s._-]*S(\d{1,2})\s*[._-]?\s*E(\d{1,3})/i);
+    const nome = (m && m[1].trim()) || i.n;
+    let s = mapa.get(nome.toLowerCase());
+    if (!s) { s = {n: nome, l: i.l, g: i.g, t: 'serie', eps: []}; mapa.set(nome.toLowerCase(), s); cat.serie.push(s); }
+    if (!s.l && i.l) s.l = i.l;
+    const ss = m ? +m[2] : 1, e = m ? +m[3] : s.eps.length + 1;
+    s.eps.push({n: nome + ' · T' + ss + 'E' + e, r: i.n, u: i.u, l: s.l, g: nome, t: 'serie', s: ss, e});
+  }
+  hero = null;
+}
+
+/* ===================================================================
+   INTERFACE: destaque, filas por grupo, grade de busca
+   =================================================================== */
+const card = i => '<div class="card ' + i.t + '" data-i="' + (reg.push(i) - 1) + '" title="' + esc(i.n) + '"><div class="cap">' +
+  (i.l ? '<img loading="lazy" alt="" src="' + esc(i.l) + '">' : IC[i.t]) + '</div><div class="tit">' + esc(i.n) + '</div></div>';
+// se uma imagem falhar, troca por ícone
+document.addEventListener('error', e => { if (e.target.tagName === 'IMG') e.target.replaceWith('📺'); }, true);
+
+const fila = (titulo, arr, acao) =>
+  '<section class="secao"><h3 class="sec"><button data-r="' + esc(acao) + '">' + esc(titulo) + ' ›</button> <small>' + arr.length +
+  '</small></h3><button class="seta e">‹</button><div class="fila">' + arr.slice(0, 40).map(card).join('') +
+  '</div><button class="seta d">›</button></section>';
+
+function render() {
+  reg = [];
+  const q = $('q').value.trim().toLowerCase();
+  const base = aba === 'inicio' ? [...cat.filme, ...cat.serie, ...cat.tv] : cat[aba];
+  lista = base.filter(i => (!q || i.n.toLowerCase().includes(q)) && (!gSel || i.g === gSel));
+  document.querySelectorAll('#abas button').forEach(b => b.classList.toggle('on', b.dataset.a === aba));
+  let h = '';
+  if (!listas.length) {
+    h = '<div class="vazio"><h2>Bem-vindo</h2><p>Adicione sua primeira lista M3U para começar.</p><button class="btn pri" data-add>📋 Adicionar lista</button></div>';
+  } else if (q || gSel) {
+    h = '<h3 class="sec">' + (gSel ? '<button data-v>‹ Voltar</button> ' + esc(gSel) : 'Resultados') + ' <small>' + lista.length + ' itens</small></h3>' +
+        '<div class="grade">' + lista.slice(0, 800).map(card).join('') + '</div>';
+  } else if (!lista.length) {
+    h = '<div class="vazio"><p>Nada por aqui ainda. Adicione uma lista deste tipo em Listas.</p></div>';
+  } else {
+    if (aba === 'inicio') {
+      if (!hero) { const pool = base.filter(x => x.l && x.t !== 'tv'); hero = pool[Math.random() * pool.length | 0] || null; }
+      if (hero) h += '<section class="hero"><img class="fundo" alt="" src="' + esc(hero.l) + '"><div class="txt"><small>' + IC[hero.t] + ' ' + NOMES[hero.t] +
+        '</small><h1>' + esc(hero.n) + '</h1><p>' + esc(hero.g) + '</p><div><button class="btn pri" data-play>▶ ' +
+        (hero.t === 'serie' ? 'Ver episódios' : 'Assistir') + '</button></div></div><img class="poster" alt="" src="' + esc(hero.l) + '"></section>';
+      for (const t of ['filme', 'serie', 'tv']) if (cat[t].length) h += fila(NOMES[t], cat[t], t);
+    } else {
+      const gr = new Map();
+      lista.forEach(i => { if (!gr.has(i.g)) gr.set(i.g, []); gr.get(i.g).push(i); });
+      [...gr].sort((a, b) => a[0].localeCompare(b[0])).slice(0, 40).forEach(([g, arr]) => h += fila(g, arr, g));
+    }
+  }
+  $('conteudo').innerHTML = h;
+}
+
+$('conteudo').addEventListener('click', e => {
+  const t = e.target, c = t.closest('.card');
+  if (c) return abrir(reg[+c.dataset.i]);
+  if (t.closest('[data-play]')) return abrir(hero);
+  if (t.closest('[data-add]')) return $('dl').showModal();
+  if (t.closest('[data-v]')) { gSel = ''; return render(); }
+  const r = t.closest('[data-r]');
+  if (r) { aba === 'inicio' ? aba = r.dataset.r : gSel = r.dataset.r; render(); return scrollTo(0, 0); }
+  const s = t.closest('.seta');
+  if (s) { const f = s.parentElement.querySelector('.fila'); f.scrollBy({left: (s.classList.contains('e') ? -1 : 1) * f.clientWidth * .8, behavior: 'smooth'}); }
+});
+$('abas').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { aba = b.dataset.a; gSel = ''; render(); } });
+let deb; $('q').addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(render, 200); });
+
+/* ===================================================================
+   LISTAS: adicionar (arquivo ou link), remover, salvar
+   =================================================================== */
+const aviso = (t, c) => { $('aviso').textContent = t; $('aviso').className = c || ''; };
+
+function renderListas() {
+  $('ul').innerHTML = listas.map((l, i) => '<li><span>' + esc(l.nome) + ' <small>· ' + l.c.length + ' itens · ' + NOMES[l.tipo] +
+    '</small></span><button data-x="' + i + '" title="Remover">✕</button></li>').join('') || '<li><small>Nenhuma lista ainda.</small></li>';
+}
+function atualizar(msg, cls) {
+  const ok = lsSet(K.listas, JSON.stringify(listas));
+  reconstruir(); renderListas(); gSel = ''; render();
+  aviso(msg + (ok ? '' : ' (grande demais para salvar no navegador: some ao recarregar)'), cls);
+}
+// Adiciona (ou substitui, se o nome já existir) uma lista
+function adicionar(nome, texto) {
+  const tipo = $('tipo').value, c = parseM3U(texto, tipo);
+  if (!c.length) { aviso('"' + nome + '": lista inválida ou vazia.', 'erro'); return false; }
+  listas = listas.filter(l => l.nome !== nome);
+  listas.push({nome, tipo, c});
   return true;
 }
 
-el.arquivo.addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => aplicar(String(r.result));
-  r.onerror = () => aviso('Não foi possível ler o arquivo.', 'erro');
-  r.readAsText(f);
-  e.target.value = '';
+$('arq').addEventListener('change', async e => {
+  const fs = [...e.target.files]; e.target.value = '';
+  let n = 0;
+  for (const f of fs) {
+    try { if (adicionar($('nome').value.trim() && fs.length === 1 ? $('nome').value.trim() : f.name.replace(/\.[^.]+$/, ''), await f.text())) n++; }
+    catch { aviso('Não foi possível ler "' + f.name + '".', 'erro'); }
+  }
+  if (n) atualizar(n + ' lista(s) adicionada(s).', 'ok');
 });
 
-async function carregarUrl() {
-  const u = el.url.value.trim();
+async function addUrl() {
+  const u = $('url').value.trim();
   if (!/^https?:\/\//i.test(u)) return aviso('Informe um link http(s) válido.', 'erro');
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), 20000);
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
   aviso('Baixando lista…', 'ok');
   try {
     const r = await fetch(u, {signal: ctl.signal});
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    if (aplicar(await r.text())) lsSet(K.url, u);
+    let host = u; try { host = new URL(u).hostname; } catch {}
+    if (adicionar($('nome').value.trim() || host, await r.text())) { atualizar('Lista adicionada.', 'ok'); $('url').value = ''; $('nome').value = ''; }
   } catch (e) {
-    const motivo = e.name === 'AbortError' ? 'tempo esgotado'
-      : /^HTTP/.test(e.message) ? 'erro ' + e.message
-      : 'bloqueio de CORS, link fora do ar ou HTTP em página HTTPS';
-    aviso('Falha ao baixar a lista (' + motivo + '). Tente baixar o arquivo e usar o botão de upload.', 'erro');
+    const m = e.name === 'AbortError' ? 'tempo esgotado' : /^HTTP/.test(e.message) ? 'erro ' + e.message : 'bloqueio de CORS, link fora do ar ou HTTP em página HTTPS';
+    aviso('Falha ao baixar (' + m + '). Baixe o arquivo e use o envio por arquivo.', 'erro');
   } finally { clearTimeout(t); }
 }
-el.carregar.onclick = carregarUrl;
-el.url.addEventListener('keydown', e => { if (e.key === 'Enter') carregarUrl(); });
-
-el.limpar.onclick = () => {
-  if (canais.length && !confirm('Remover a lista salva?')) return;
-  canais = []; vista = [];
-  lsDel(K.lista); lsDel(K.url); el.url.value = ''; el.busca.value = '';
-  resetAtual('Carregue uma lista M3U para começar.');
-  renderGrupos(); filtrar();
-  aviso('Lista removida.', 'ok');
-};
-
-/* ===== Lista, busca e filtro ===== */
-const logoHTML = l => '<span class="logo">' + (l ? '<img loading="lazy" alt="" src="' + esc(l) + '">' : '📺') + '</span>';
-// se a imagem do logo falhar, troca por um ícone
-document.addEventListener('error', e => { if (e.target.tagName === 'IMG') e.target.replaceWith('📺'); }, true);
-
-function renderGrupos() {
-  const gs = [...new Set(canais.map(c => c.g))].sort((a, b) => a.localeCompare(b));
-  el.grupo.innerHTML = '<option value="">Todos os grupos (' + gs.length + ')</option>' +
-    gs.map(g => '<option>' + esc(g) + '</option>').join('');
-}
-
-function filtrar() {
-  const q = el.busca.value.trim().toLowerCase(), g = el.grupo.value;
-  vista = [];
-  canais.forEach((c, i) => { if ((!g || c.g === g) && (!q || c.n.toLowerCase().includes(q))) vista.push(i); });
-  el.lista.innerHTML = vista.map(i => {
-    const c = canais[i];
-    return '<li data-i="' + i + '"' + (i === atual ? ' class="ativo"' : '') + '>' + logoHTML(c.l) +
-      '<div class="info"><div class="nome">' + esc(c.n) + '</div><div class="grupo">' + esc(c.g) + '</div></div></li>';
-  }).join('');
-  el.contador.textContent = vista.length === canais.length
-    ? canais.length + ' canais' : vista.length + ' de ' + canais.length + ' canais';
-}
-
-let deb;
-el.busca.addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(filtrar, 150); });
-el.grupo.addEventListener('change', filtrar);
-el.lista.addEventListener('click', e => {
-  const li = e.target.closest('li');
-  if (!li) return;
-  tocar(+li.dataset.i);
-  el.lateral.classList.remove('aberto');
+$('add').onclick = addUrl;
+$('url').addEventListener('keydown', e => { if (e.key === 'Enter') addUrl(); });
+$('ul').addEventListener('click', e => {
+  const b = e.target.closest('[data-x]');
+  if (b) { listas.splice(+b.dataset.x, 1); atualizar('Lista removida.', 'ok'); }
 });
+$('limpar').onclick = () => { if (listas.length && confirm('Remover todas as listas?')) { listas = []; atualizar('Tudo removido.', 'ok'); } };
+$('btnListas').onclick = () => { renderListas(); aviso(''); $('dl').showModal(); };
+$('fx').onclick = () => $('dl').close();
+
+/* ===================================================================
+   SÉRIES: escolha de temporada e episódio
+   =================================================================== */
+function abrirSerie(s) {
+  serAtual = s;
+  const ts = [...new Set(s.eps.map(e => e.s))].sort((a, b) => a - b);
+  $('sn').textContent = s.n;
+  $('st').innerHTML = ts.map(t => '<option value="' + t + '">Temporada ' + t + '</option>').join('');
+  episodios(); $('ds').showModal();
+}
+function episodios() {
+  const t = +$('st').value;
+  serEps = serAtual.eps.filter(e => e.s === t).sort((a, b) => a.e - b.e);
+  $('se').innerHTML = serEps.map((e, i) => '<li data-p="' + i + '"><span>' + esc(e.r) + '</span><small>Ep. ' + e.e + '</small></li>').join('');
+}
+$('st').onchange = episodios;
+$('se').addEventListener('click', e => { const li = e.target.closest('li'); if (li) { $('ds').close(); tocar(serEps, +li.dataset.p); } });
+$('fs').onclick = () => $('ds').close();
 
 /* ===================================================================
    PLAYER
    =================================================================== */
-const mostrar = (t, retry) => { el.msg.textContent = t; el.retry.hidden = !retry; el.overlay.hidden = false; };
+const mostrar = (t, retry) => { $('msg').textContent = t; $('retry').hidden = !retry; $('overlay').hidden = false; };
 
-// Libera tudo do canal anterior (destrói o Hls.js para não vazar memória)
+// Libera o canal anterior (destrói o Hls.js para não vazar memória)
 function limparPlayer() {
   clearTimeout(timer);
   if (hls) { hls.destroy(); hls = null; }
-  el.video.pause();
-  el.video.removeAttribute('src');
-  el.video.load();
+  const v = $('video'); v.pause(); v.removeAttribute('src'); v.load();
 }
-
-function resetAtual(msg) {
-  limparPlayer();
-  atual = -1;
-  el.nomeAtual.textContent = 'Nenhum canal';
-  el.grupoAtual.textContent = '';
-  el.logoAtual.textContent = '📺';
-  mostrar(msg);
-}
-
 function erro() {
   limparPlayer();
-  let m = 'Não foi possível carregar este canal. Tente outro.';
-  if (location.protocol === 'https:' && /^http:/i.test(canais[atual] ? canais[atual].u : ''))
-    m += '\n(Este canal usa HTTP e o site está em HTTPS: o navegador bloqueia.)';
+  let m = 'Não foi possível carregar este conteúdo. Tente outro.';
+  if (location.protocol === 'https:' && ctx[pos] && /^http:/i.test(ctx[pos].u)) m += '\n(Link em HTTP e site em HTTPS: o navegador bloqueia.)';
   mostrar(m, true);
 }
 
-// Troca de canal: atualiza interface e inicia a reprodução
-function tocar(i) {
-  const c = canais[i];
-  if (!c) return;
-  atual = i;
-  el.nomeAtual.textContent = c.n;
-  el.grupoAtual.textContent = c.g;
-  el.logoAtual.innerHTML = c.l ? '<img alt="" src="' + esc(c.l) + '">' : '📺';
-  const ativo = el.lista.querySelector('.ativo');
-  if (ativo) ativo.classList.remove('ativo');
-  const li = el.lista.querySelector('[data-i="' + i + '"]');
-  if (li) { li.classList.add('ativo'); li.scrollIntoView({block: 'nearest'}); }
-  iniciar();
+// Abre um item (filme/canal toca direto; série abre a lista de episódios)
+function abrir(it) {
+  if (!it) return;
+  if (it.t === 'serie') return abrirSerie(it);
+  const arr = it.t === 'tv' ? lista.filter(x => x.t === 'tv' && x.g === it.g) : [it];
+  tocar(arr, Math.max(0, arr.indexOf(it)));
+}
+// Troca de canal/episódio
+function tocar(arr, p) {
+  ctx = arr; pos = p;
+  const it = ctx[pos];
+  $('pn').textContent = it.n; $('pg').textContent = it.g;
+  $('ant').hidden = $('prox').hidden = ctx.length < 2;
+  if (!$('dp').open) $('dp').showModal();
+  iniciar(it.u);
 }
 
 // Inicialização do HLS: nativo (Safari) ou Hls.js
-function iniciar() {
-  const url = canais[atual].u;
-  tentativas = 0;
-  limparPlayer();
-  mostrar('Carregando…');
+function iniciar(url) {
+  const v = $('video'); tent = 0;
+  limparPlayer(); mostrar('Carregando…');
   try {
-    const arquivoSimples = /\.(mp4|webm|ogv|mp3|aac|m4a)(\?|#|$)/i.test(url);
-    const hlsNativo = el.video.canPlayType('application/vnd.apple.mpegurl');
-    nativo = !!hlsNativo || arquivoSimples;
-
-    if (nativo) {
-      el.video.src = url;
-      el.video.play().catch(() => {});
-    } else {
+    const simples = /\.(mp4|webm|ogv|mp3|aac|m4a|mkv|avi|mov)(\?|#|$)/i.test(url);
+    nativo = !!v.canPlayType('application/vnd.apple.mpegurl') || simples;
+    if (nativo) { v.src = url; v.play().catch(() => {}); }
+    else {
       if (typeof Hls === 'undefined' || !Hls.isSupported()) return erro();
       hls = new Hls({enableWorker: true, maxBufferLength: 30});
-      hls.on(Hls.Events.MANIFEST_PARSED, () => el.video.play().catch(() => {}));
+      hls.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(() => {}));
       hls.on(Hls.Events.ERROR, (_, d) => {
         if (!d.fatal) return;
-        if (d.type === Hls.ErrorTypes.NETWORK_ERROR && tentativas++ < 2) hls.startLoad();
-        else if (d.type === Hls.ErrorTypes.MEDIA_ERROR && tentativas++ < 2) hls.recoverMediaError();
+        if (d.type === Hls.ErrorTypes.NETWORK_ERROR && tent++ < 2) hls.startLoad();
+        else if (d.type === Hls.ErrorTypes.MEDIA_ERROR && tent++ < 2) hls.recoverMediaError();
         else erro();
       });
-      hls.attachMedia(el.video);
-      hls.loadSource(url);
+      hls.attachMedia(v); hls.loadSource(url);
     }
-    timer = setTimeout(erro, 25000);   // se nada tocar em 25s, considera falha
-  } catch (e) { erro(); }
+    timer = setTimeout(erro, 30000);
+  } catch { erro(); }
 }
+$('video').addEventListener('playing', () => { clearTimeout(timer); $('overlay').hidden = true; });
+$('video').addEventListener('error', () => { if (nativo && $('dp').open) erro(); });
+$('retry').onclick = () => { if (ctx[pos]) iniciar(ctx[pos].u); };
+$('voltar').onclick = () => $('dp').close();
+$('dp').addEventListener('close', () => { limparPlayer(); mostrar(''); });
 
-el.video.addEventListener('playing', () => { clearTimeout(timer); el.overlay.hidden = true; });
-el.video.addEventListener('error', () => { if (nativo && atual >= 0) erro(); });
-el.retry.onclick = () => { if (atual >= 0) iniciar(); };
+function mover(d) { if (ctx.length > 1) tocar(ctx, (pos + d + ctx.length) % ctx.length); }
+$('ant').onclick = () => mover(-1);
+$('prox').onclick = () => mover(1);
 
-/* ===== Anterior / próximo (dentro da lista filtrada) ===== */
-function mover(d) {
-  if (!vista.length) return;
-  const p = vista.indexOf(atual);
-  const n = p < 0 ? (d > 0 ? 0 : vista.length - 1) : (p + d + vista.length) % vista.length;
-  tocar(vista[n]);
-}
-el.ant.onclick = () => mover(-1);
-el.prox.onclick = () => mover(1);
-
-/* ===== Atalhos: ↑/↓ trocam de canal, espaço = play/pause ===== */
+// Atalhos (só com o player aberto): ↑/↓ troca, ←/→ pula 10s, espaço = play/pause
 document.addEventListener('keydown', e => {
-  const t = e.target.tagName;
-  if (/INPUT|SELECT|TEXTAREA/.test(t)) return;
-  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-    e.preventDefault();
-    mover(e.key === 'ArrowDown' ? 1 : -1);
-  } else if (e.key === ' ' && !/BUTTON|VIDEO/.test(t)) {
-    e.preventDefault();
-    el.video.paused ? el.video.play().catch(() => {}) : el.video.pause();
-  }
+  if (!$('dp').open || /INPUT|SELECT/.test(e.target.tagName)) return;
+  const v = $('video'), t = e.target.tagName;
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); mover(e.key === 'ArrowDown' ? 1 : -1); }
+  else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && t !== 'VIDEO' && isFinite(v.duration)) { e.preventDefault(); v.currentTime += e.key === 'ArrowRight' ? 10 : -10; }
+  else if (e.key === ' ' && !/BUTTON|VIDEO/.test(t)) { e.preventDefault(); v.paused ? v.play().catch(() => {}) : v.pause(); }
 });
 
-/* ===== Tema e menu ===== */
-function aplicarTema(t) {
-  document.documentElement.dataset.theme = t;
-  el.tema.textContent = t === 'dark' ? '🌙' : '☀️';
-}
-el.tema.onclick = () => {
-  const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  aplicarTema(t); lsSet(K.tema, t);
-};
-el.menu.onclick = () => el.lateral.classList.toggle('aberto');
+/* ===== Tema ===== */
+function aplicarTema(t) { document.documentElement.dataset.theme = t; $('tema').textContent = t === 'dark' ? '🌙' : '☀️'; }
+$('tema').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; aplicarTema(t); lsSet(K.tema, t); };
 
-/* ===== Inicialização: restaura a lista salva ===== */
+/* ===== Inicialização ===== */
 aplicarTema(lsGet(K.tema) || 'dark');
-try { canais = JSON.parse(lsGet(K.lista) || '[]'); } catch { canais = []; }
-if (!Array.isArray(canais)) canais = [];
-el.url.value = lsGet(K.url) || '';
-renderGrupos(); filtrar();
-mostrar(canais.length ? 'Escolha um canal na lista.' : 'Carregue uma lista M3U para começar.');
-if (!canais.length) el.lateral.classList.add('aberto');   // no celular, abre o painel
+try { listas = JSON.parse(lsGet(K.listas) || '[]'); } catch { listas = []; }
+if (!Array.isArray(listas)) listas = [];
+if (!listas.length) {   // migra a lista salva pela versão anterior
+  try {
+    const velha = JSON.parse(lsGet(K.antigo) || '[]');
+    if (velha.length) listas = [{nome: 'Minha lista', tipo: 'auto', c: velha.map(i => ({...i, t: detectar(i)}))}];
+  } catch {}
+}
+reconstruir(); render();
+if (!listas.length) { renderListas(); $('dl').showModal(); }
 })();
 </script>
 </body>
